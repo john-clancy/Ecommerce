@@ -1,22 +1,63 @@
 const router = require('express').Router();
+const { json } = require('sequelize');
 const { Product, Category, Tag, ProductTag } = require('../../models');
 
 // The `/api/products` endpoint
 
 // get all products
 router.get('/', (req, res) => {
+  Product.findAll({
+    include:({
+      Category,
+      
+        model: Tag,
+        through:ProductTag
+    })
+    .then(dbproducts=> res.json(dbproducts))
+    .catch(err=>{
+      console.log(err);
+      res.status(500).json(err);
+    })
+    })
+  });
   // find all products
   // be sure to include its associated Category and Tag data
-});
+
 
 // get one product
 router.get('/:id', (req, res) => {
+  Tag.findOne({
+    where:{
+      id: req.params.id
+    },
+    include:({
+      module: Tag,
+      through: ProductTag
+    })
+  })
+  .then(productData=>{
+    if(!productData){
+      res.status(404)/json({Alert: 'No product found.'});
+      return;
+    }
+    res.json(productData)
+  })
+  .catch(err=>{
+    console.log(err);
+    res.status(500).json(err);
+  })
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
 });
 
 // create new product
 router.post('/', (req, res) => {
+  Product.create({
+    product_name: req.body.product_name,
+    price: req.body.price,
+    stock: req.body.stock,
+    tagTds: req.body.tagIds
+  })
   /* req.body should look like this...
     {
       product_name: "Basketball",

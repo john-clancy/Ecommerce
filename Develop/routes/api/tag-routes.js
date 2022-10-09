@@ -34,7 +34,7 @@ router.get('/:id', (req, res) => {
     if (!dbTagData){
       res.status(404).json({Alert: 'No tag identified with this id.'});
       return;
-    }
+  }
     res.json(dbTagData);
   })  
   .catch(err=>{
@@ -42,6 +42,7 @@ router.get('/:id', (req, res) => {
     res.status(500).json(err);
   })
 });
+
 router.post('/', (req, res) => {
   // create a new tag
   Tag.create({
@@ -97,4 +98,4 @@ router.delete('/:id', (req, res) => {
   })
 });
 
-module.exports = router;
+module.exports = router
